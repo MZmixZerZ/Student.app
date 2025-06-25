@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://student-api-3js0.onrender.com/api'
+  apiUrl: 'https://student-api-0gxf.onrender.com/api'
 };

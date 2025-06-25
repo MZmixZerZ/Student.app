@@ -37,11 +37,21 @@ async function bootstrap() {
   SwaggerModule.setup(globalPrefix, app, document);
 
   // ตั้งค่า CORS ให้รองรับทั้ง local และ production
+  const allowedOrigins = [
+    'http://localhost:4200', // สำหรับ local dev
+    'https://student-app-ss0i.onrender.com', // frontend production ล่าสุด
+    'https://student-api-0gxf.onrender.com', // backend (ถ้าต้องการ)
+  ];
+
   app.enableCors({
-    origin: [
-      'https://student-app-3vt7.onrender.com',
-      'http://localhost:4200'
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
