@@ -1,0 +1,39 @@
+import * as bcrypt from 'bcrypt';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { RequestUserDto } from 'src/common/presentation/dtos/request-user.dto';
+
+@Injectable()
+export class AuthService {
+  constructor(private readonly jwtService: JwtService) {}
+
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    // ป้องกัน error: data and hash arguments required
+    if (!password || !hashedPassword) {
+      return false;
+    }
+    return bcrypt.compare(password, hashedPassword);
+  }
+
+  async generateJwtToken(user: any): Promise<string> {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      name: user.fullName || user.name || '',
+      username: user.username,
+      status: user.status || 'online',
+      role: user.role || [],
+      companies: user.companies || [],
+      companySelected: user.companySelected || null,
+    };
+
+    return this.jwtService.sign(payload);
+  }
+}
