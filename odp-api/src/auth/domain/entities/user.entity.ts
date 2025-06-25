@@ -13,12 +13,11 @@ export class UserEntity {
   @Prop({ type: String, unique: true, required: true })
   username: string;
 
-  @Expose()
   @Prop({ type: String, required: true })
-  password: string;
+  password: string; // ไม่ใส่ @Expose เพื่อป้องกัน password หลุดออกนอกระบบ
 
   @Expose()
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   email: string;
 
   @Expose()
@@ -65,4 +64,3 @@ export class UserEntity {
   @Prop({ type: Object })
   updatedBy: any;
 }
-

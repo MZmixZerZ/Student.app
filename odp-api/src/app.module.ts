@@ -38,6 +38,7 @@ export class AppModule {
         { path: 'auth/register', method: RequestMethod.POST },
         { path: 'line/webhook', method: RequestMethod.POST },
         { path: 'api/line/webhook', method: RequestMethod.POST },
+        // เพิ่ม path สำหรับ health check หรือ public endpoint อื่น ๆ ที่ไม่ต้องใช้ token ได้ที่นี่
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }

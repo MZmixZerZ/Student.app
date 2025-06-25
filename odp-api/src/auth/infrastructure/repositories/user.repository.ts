@@ -16,13 +16,9 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async findByUsername(username: string): Promise<UserEntity | null> {
+    // ต้องคืน user พร้อม password (ไม่ลบ password ออก)
     const user = await this.userModel.findOne({ username: username });
-    return user ? this.mapToEntity(user) : null;
-  }
-
-  async findByEmail(email: string): Promise<UserEntity | null> {
-    const user = await this.userModel.findOne({ email: email });
-    return user ? this.mapToEntity(user) : null;
+    return user ? this.mapToEntityWithPassword(user) : null;
   }
 
   // ฟังก์ชันสำหรับนับจำนวนผู้ใช้ทั้งหมด
@@ -103,6 +99,16 @@ export class UserRepository implements UserRepositoryInterface {
     ]);
 
     return [users.map((t) => this.mapToEntity(t)), count];
+  }
+
+  // เพิ่มฟังก์ชันนี้เพื่อคืน entity พร้อม password (ใช้สำหรับ auth เท่านั้น)
+  private mapToEntityWithPassword(user: any): UserEntity {
+    const plainObject = user.toObject();
+    // ไม่ลบ password
+    const entity = plainToInstance(UserEntity, plainObject, {
+      excludeExtraneousValues: true,
+    });
+    return entity;
   }
 
   private mapToEntity(user: any): UserEntity {

@@ -17,7 +17,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
-import { CommonModule } from '@angular/common'; // <-- เพิ่มบรรทัดนี้
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'auth-sign-in',
@@ -26,7 +26,7 @@ import { CommonModule } from '@angular/common'; // <-- เพิ่มบรร�
     animations: fuseAnimations,
     standalone: true,
     imports: [
-        CommonModule, // <-- เพิ่มบรรทัดนี้
+        CommonModule,
         RouterLink,
         FuseAlertComponent,
         FormsModule,
@@ -48,7 +48,7 @@ export class AuthSignInComponent implements OnInit {
     };
     signInForm: UntypedFormGroup;
     showAlert: boolean = false;
-    hidePassword: boolean = true; // เพิ่มตัวแปรสำหรับซ่อน/แสดงรหัสผ่าน
+    hidePassword: boolean = true;
 
     /**
      * Constructor
@@ -70,10 +70,7 @@ export class AuthSignInComponent implements OnInit {
     ngOnInit(): void {
         // Create the form
         this.signInForm = this._formBuilder.group({
-            email: [
-                '',
-                [Validators.required, Validators.email],
-            ],
+            username: ['', Validators.required],
             password: ['', Validators.required],
             rememberMe: [''],
         });
@@ -98,13 +95,7 @@ export class AuthSignInComponent implements OnInit {
         // Hide the alert
         this.showAlert = false;
 
-        const { rememberMe, ...data } = this.signInForm.value;
-
-        // Map email to username (ให้ตรงกับ backend)
-        const payload = {
-            username: data.email,
-            password: data.password
-        };
+        const { rememberMe, ...payload } = this.signInForm.value;
 
         // Sign in
         this._authService.signIn(payload).subscribe(
@@ -120,7 +111,7 @@ export class AuthSignInComponent implements OnInit {
                 }
                 this.alert = {
                     type: 'error',
-                    message: response.error?.message || 'Invalid email or password.',
+                    message: response.error?.message || 'Invalid username or password.',
                 };
                 this.showAlert = true;
             }

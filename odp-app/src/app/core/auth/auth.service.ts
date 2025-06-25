@@ -58,16 +58,19 @@ export class AuthService {
 
     /**
      * Sign in
+     * ส่ง payload { username, password } ไป backend
      */
     signIn(credentials: LoginPayload): Observable<AuthResponse> {
-        return this._httpClient.post<AuthResponse>(`${environment.apiUrl}/auth/signin`, credentials).pipe(
+        // ปรับให้ส่ง username (ไม่ใช่ email)
+        const payload = {
+            username: credentials.username,
+            password: credentials.password,
+        };
+        return this._httpClient.post<AuthResponse>(`${environment.apiUrl}/auth/signin`, payload).pipe(
             switchMap((response: AuthResponse) => {
-                // Store the access token in the local storage
                 if (response && response.accessToken) {
                     this.accessToken = response.accessToken;
                     this._authenticated = true;
-
-                    // Decode the access token and store it in the user service
                     const decodedToken = AuthUtils.decodeToken(response.accessToken);
                     this._userService.user = {
                         ...this._userService.user,
@@ -76,8 +79,6 @@ export class AuthService {
                 } else {
                     this._authenticated = false;
                 }
-
-                // Return a new observable with the response
                 return of(response);
             }),
             catchError((error) => {
@@ -91,7 +92,6 @@ export class AuthService {
      * Sign in using the access token
      */
     signInUsingToken(): Observable<any> {
-        // Sign in using the token
         return this._httpClient
             .post(`${environment.apiUrl}/auth/sign-in-with-token`, {
                 accessToken: this.accessToken,
@@ -102,15 +102,12 @@ export class AuthService {
                     if (response.accessToken) {
                         this.accessToken = response.accessToken;
                     }
-
                     this._authenticated = true;
-
                     const decodedToken = AuthUtils.decodeToken(response.accessToken);
                     this._userService.user = {
                         ...this._userService.user,
                         ...decodedToken,
                     };
-
                     return of(true);
                 })
             );
@@ -137,13 +134,12 @@ export class AuthService {
         companyRegisterNo?: string;
         agreements?: boolean;
     }): Observable<any> {
-        // Set username = email (ถ้าไม่ได้ส่งมา)
+        // ถ้าไม่มี username ให้ใช้ email เป็น username
         if (!user.username) {
             user.username = user.email;
         }
         return this._httpClient.post(`${environment.apiUrl}/auth/signup`, user).pipe(
             switchMap((response: any) => {
-                // ถ้ามี accessToken ให้ set token และ authenticated
                 if (response && response.accessToken) {
                     this.accessToken = response.accessToken;
                     this._authenticated = true;

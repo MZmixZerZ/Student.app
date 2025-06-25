@@ -39,10 +39,11 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand>
       user.password = await this.authService.hashPassword(registerUserDto.password);
       user.createdAt = today;
 
-      await this.userRepository.save(user);
+      // บันทึก user ลงฐานข้อมูล
+      const savedUser = await this.userRepository.save(user);
 
-      // สมัครเสร็จ return JWT token
-      return this.authService.generateJwtToken(user);
+      // สมัครเสร็จ return JWT token (ใช้ข้อมูล user ที่ save แล้ว)
+      return this.authService.generateJwtToken(savedUser);
     } catch (error) {
       throw new BadRequestException(error.message || 'Registration failed');
     }
